@@ -29,7 +29,7 @@ dtoverlay=disable-bt
 
 # MKS TS35
 hdmi_force_hotplug=1
-hdmi_cvt=hdmi_cvt=480 320 60 1 0 0 0
+hdmi_cvt=480 320 60 1 0 0 0
 hdmi_group=2
 hdmi_mode=1
 hdmi_mode=87
@@ -43,12 +43,12 @@ dtoverlay=tinylcd35,touch
 ```
 sudo apt-get install cmake -y
 cd ~
-sudo git clone https://github.com/tasanakorn/rpi-fbcp
+git clone https://github.com/tasanakorn/rpi-fbcp
 cd rpi-fbcp/
-sudo mkdir build
+mkdir build
 cd build
-sudo cmake ..
-sudo make
+cmake ..
+make
 sudo install fbcp /usr/local/bin/fbcp
 ```
 
