@@ -3,7 +3,9 @@
 ## Notes
 * This guide is mostly based on [willngton](https://github.com/willngton) guide on how to [connect MKS TS35 screen in Raspberry Pi to run Klipperscreen](https://github.com/willngton/3DPrinterConfig/tree/main/mks_ts35), which is also based on other guides (see his git for details).
 * Due to some Linux kernel and Xorg changes, the touchscreen calibration would not work anymore, thus the necessity of this guide.
-* This was validated with [Raspberry Pi Os Lite 32-bit, release September 6th 2022, kernel 5.15, Debian 11 (bullseye)](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-09-07/).
+* ~~This was validated with [Raspberry Pi Os Lite 32-bit, release September 6th 2022, kernel 5.15, Debian 11 (bullseye)](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-09-07/).~~
+* Updated and tested with [release from September 22th 2022](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-09-26/).
+* If something goes wrong, break, or don't work, unload the screen device tree from step 5 and redo everything. 
 
 ## 1. Prepare the system and wiring
 ### 1.1. System
@@ -18,28 +20,23 @@ sudo apt install git -y
 ### 1.2. Wiring
 ![PINOUT](pinout.png)
 
-## 2. Edit /boot/config.txt
+## 2. Edit Xorg X server binary wrapper
 ```
-sudo nano /boot/config.txt
+sudo nano /etc/X11/Xwrapper.config
 ```
 
-Add these lines in the bottom of the file:
+* Add these lines in the bottom of the file:
 ```
-dtoverlay=disable-bt
+needs_root_rights=yes
+````
 
-# MKS TS35
-hdmi_force_hotplug=1
-hdmi_cvt=480 320 60 1 0 0 0
-hdmi_group=2
-hdmi_mode=1
-hdmi_mode=87
-display_rotate=0
-dtparam=spi=on
-dtoverlay=tinylcd35,touch
+## 3. Install OpenGL driver for fake KMS
 ```
-`CTRL+X` to exit, and press `Y` to confirm changes to the file.
+sudo apt install gldriver-test -y
+```
 
-## 3.  Install framebuffer copy (fbcp)
+## 4.  Setup framebuffer copy
+* Install binaries:
 ```
 sudo apt-get install cmake -y
 cd ~
@@ -51,12 +48,11 @@ cmake ..
 make
 sudo install fbcp /usr/local/bin/fbcp
 ```
-
-## 4. Create and enable fbcp service
+* Create service:
 ```
 sudo nano /etc/systemd/system/fbcp.service
 ```
-Add the contents below to the file.
+* Add the contents below to the file.
 ```
 [Unit]
 Description=fbcp
@@ -72,13 +68,35 @@ ExecStart=/usr/local/bin/fbcp
 WantedBy=multi-user.target
 ```
 `CTRL+X` to exit, and press `Y` to confirm changes to the file.
-Enable the fbcp service.
+
+* Enable the fbcp service.
 ```
 sudo systemctl enable fbcp.service
 ```
-**Reboot host and reconnect.**
 
-## 5. Touscheen calibration
+## 5. Load drivers and device tree in configuration file
+```
+sudo nano /boot/config.txt
+```
+* Change `dtoverlay=vc4-kms-v3d` to `dtoverlay=vc4-fkms-v3d` (around line 62).
+
+* Add these lines in the bottom of the file:
+```
+dtoverlay=disable-bt
+
+# MKS TS35
+dtparam=spi=on
+hdmi_cvt=480 320 60 1
+hdmi_group=2
+hdmi_mode=87
+display_rotate=0
+dtoverlay=tinylcd35,touch
+```
+`CTRL+X` to exit, and press `Y` to confirm changes to the file.
+
+**Reboot host and reconnect. After booting, KlipperScreen must load after console screen.**
+
+## 6. Touchscreen calibration
 Here's where things are a bit different from the original guide. Instead of using `xinput-calibrator`, use `xlibinput-calibrator`.
 
 Follow the instructions in it's [GitHub page](https://github.com/kreijack/xlibinput_calibrator) to resolve dependencies and compile, or:
