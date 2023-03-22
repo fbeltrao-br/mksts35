@@ -1,11 +1,22 @@
 # MKS TS35 with KlipperScreen on Raspberry Pi from scratch
 
+> __Warning__
+> 
+> Kernel 6.1 breaks compatibility with the screen. Everytime RaspiOS is updated with "new features", it breaks compatibility with something. I do not have time or reasons to keep playing this game of cat and mouse fixing problems caused by kernel updates. For now, stick to version 5.15 by blocking it from being updated, life is better this way and you'll have no benefit jumping to version 6.1: 
+
+```
+sudo apt-mark hold libraspberrypi-bin libraspberrypi-dev libraspberrypi-doc libraspberrypi0 raspberrypi-bootloader raspberrypi-kernel raspberrypi-kernel-headers
+```
+
+
+
 ## Notes
 * This guide is mostly based on [willngton](https://github.com/willngton) guide on how to [connect MKS TS35 screen in Raspberry Pi to run Klipperscreen](https://github.com/willngton/3DPrinterConfig/tree/main/mks_ts35), which is also based on other guides (see his git for details).
 * Due to some Linux kernel and Xorg changes, the touchscreen calibration would not work anymore, thus the necessity of this guide.
 * ~~This was validated with [Raspberry Pi Os Lite 32-bit, release September 6th 2022, kernel 5.15, Debian 11 (bullseye)](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-09-07/).~~
-* Updated and tested with [release from September 22th 2022](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-09-26/).
-* If something goes wrong, break, or don't work, unload the screen device tree from step 5 and redo everything. 
+* ~~Updated and tested with [release from September 22th 2022](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-09-26/).~~
+* Updated and tested with [release from Febuary 21st 2023](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2023-02-22/2023-02-21-raspios-bullseye-armhf-lite.img.xz).
+* If something goes wrong, break, or don't work, unload the screen device tree from step 5 and redo everything.
 
 ## 1. Prepare the system and wiring
 ### 1.1. System
