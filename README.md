@@ -93,6 +93,7 @@ sudo nano /boot/config.txt
 
 * Add these lines in the bottom of the file:
 ```
+[all]
 dtoverlay=disable-bt
 
 # MKS TS35
