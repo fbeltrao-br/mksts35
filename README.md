@@ -4,6 +4,10 @@
 > 
 > Kernel 6.1 breaks compatibility with the screen. Everytime RaspiOS is updated with "new features", it breaks compatibility with something. I do not have time or reasons to keep playing this game of cat and mouse fixing problems caused by kernel updates. For now, stick to version 5.15 by blocking it from being updated, life is better this way and you'll have no benefit jumping to version 6.1: 
 
+> __Warning__
+> 
+> Klipperscreen hangs if "Screen Power Off Time" is enabled, set it to "Never" in settings.
+
 ```
 sudo apt-mark hold libraspberrypi-bin libraspberrypi-dev libraspberrypi-doc libraspberrypi0 raspberrypi-bootloader raspberrypi-kernel raspberrypi-kernel-headers
 ```
