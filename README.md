@@ -2,35 +2,20 @@
 
 > __Warning__
 > 
-> Kernel 6.1 breaks compatibility with the screen. Everytime RaspiOS is updated with "new features", it breaks compatibility with something. I do not have time or reasons to keep playing this game of cat and mouse fixing problems caused by kernel updates. For now, stick to version 5.15 by blocking it from being updated, life is better this way and you'll have no benefit jumping to version 6.1: 
-
-> __Warning__
-> 
 > Klipperscreen hangs if "Screen Power Off Time" is enabled, set it to "Never" in settings.
-
-```
-sudo apt-mark hold libraspberrypi-bin libraspberrypi-dev libraspberrypi-doc libraspberrypi0 raspberrypi-bootloader raspberrypi-kernel raspberrypi-kernel-headers
-```
-
-
 
 ## Notes
 * This guide is mostly based on [willngton](https://github.com/willngton) guide on how to [connect MKS TS35 screen in Raspberry Pi to run Klipperscreen](https://github.com/willngton/3DPrinterConfig/tree/main/mks_ts35), which is also based on other guides (see his git for details).
 * Due to some Linux kernel and Xorg changes, the touchscreen calibration would not work anymore, thus the necessity of this guide.
 * ~~This was validated with [Raspberry Pi Os Lite 32-bit, release September 6th 2022, kernel 5.15, Debian 11 (bullseye)](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-09-07/).~~
 * ~~Updated and tested with [release from September 22th 2022](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-09-26/).~~
-* Updated and tested with [release from Febuary 21st 2023](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2023-02-22/2023-02-21-raspios-bullseye-armhf-lite.img.xz).
+* ~~Updated and tested with [release from Febuary 21st 2023](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2023-02-22/2023-02-21-raspios-bullseye-armhf-lite.img.xz).~~
+* Updated and tested with [release from May 3rd 2023](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2023-05-03/2023-05-03-raspios-bullseye-armhf-lite.img.xz). Kernel 6.1 drivers were update and now works as intended.
 * If something goes wrong, break, or don't work, unload the screen device tree from step 5 and redo everything.
 
 ## 1. Prepare the system and wiring
 ### 1.1. System
-Write RaspiOS Lite image in your microSD card, connect either via SSH or Serial, download [KIAUH](https://github.com/th33xitus/kiauh), and within the script, proceed installing Klipper, Moonraker, your favorite web interface (Mainsail or Fluidd), and KlipperScreen.
-
-You may need to install git before being able to clone the repositories.
-```
-sudo apt update
-sudo apt install git -y
-```
+Write RaspiOS Lite image in your microSD card, connect either via SSH or Serial, and follow instructions at [KIAUH](https://github.com/th33xitus/kiauh), and within the script, proceed installing Klipper, Moonraker, your favorite web interface (Mainsail or Fluidd), and KlipperScreen.
 
 ### 1.2. Wiring
 ![PINOUT](pinout.png)
@@ -112,9 +97,7 @@ dtoverlay=tinylcd35,touch
 **Reboot host and reconnect. After booting, KlipperScreen must load after console screen.**
 
 ## 6. Touchscreen calibration
-Here's where things are a bit different from the original guide. Instead of using `xinput-calibrator`, use `xlibinput-calibrator`.
-
-Follow the instructions in it's [GitHub page](https://github.com/kreijack/xlibinput_calibrator) to resolve dependencies and compile, or:
+Download, compile and install xlibinput_calibrator. Follow the instructions in it's [GitHub page](https://github.com/kreijack/xlibinput_calibrator) to resolve dependencies and compile, or:
 ```
 sudo apt install libxfixes-dev libxi-dev libxrandr-dev x11proto-input-dev x11proto-randr-dev -y
 cd ~
@@ -125,7 +108,11 @@ g++ -MT main.o -MMD -MP -MF .d/main.Td -Wall -pedantic -std=c++17 -c -o main.o m
 sudo install xlibinput_calibrator /usr/local/bin/xlibinput_calibrator
 ```
 
-List your displays with `DISPLAY=:0 xlibinput_calibrator --list-devices`, you should see your SPI screen ID and name:
+List your displays with:
+```
+DISPLAY=:0 xlibinput_calibrator --list-devices
+```
+And you should see your SPI screen ID and name:
 ```
 pi@klipper:~ $ DISPLAY=:0 xlibinput_calibrator --list-devices
   6: ADS7846 Touchscreen
