@@ -1,0 +1,129 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835";
+
+	fragment@0 {
+		target = <&spi0>;
+
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target = <&spidev0>;
+
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+
+	fragment@2 {
+		target = <&spidev1>;
+
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+
+	fragment@3 {
+		target = <&gpio>;
+
+		__overlay__ {
+
+			mksts35v2_pins {
+				brcm,pins = <0x19 0x18 0x12>;
+				brcm,function = <0x01>;
+				phandle = <0x01>;
+			};
+
+			mksts35v2_ts_pins {
+				brcm,pins = <0x05>;
+				brcm,function = <0x00>;
+				phandle = <0x02>;
+			};
+		};
+	};
+
+	fragment@4 {
+		target = <&spi0>;
+
+		__overlay__ {
+			#address-cells = <0x01>;
+			#size-cells = <0x00>;
+
+			mksts35v2@0 {
+				compatible = "ilitek,ili9486";
+				reg = <0x00>;
+				pinctrl-names = "default";
+				pinctrl-0 = <0x01 0x02>;
+				spi-max-frequency = <0x2dc6c00>;
+				rotate = <0x10e>;
+				fps = <0x1e>;
+				bgr;
+				buswidth = <0x08>;
+				reset-gpios = <&gpio 0x19 0x01>;
+				dc-gpios = <&gpio 0x18 0x00>;
+				led-gpios = <&gpio 0x12 0x00>;
+				debug = <0x00>;
+				init = <0x10000b0 0x80 0x10000c0 0x0a 0x0a 0x10000c1 0x01 0x01 0x10000c2 0x33 0x10000c5 0x00 0x42 0x80 0x10000b1 0xd0 0x11 0x10000b4 0x02 0x10000b6 0x00 0x22 0x3b 0x10000b7 0x07 0x1000036 0x58 0x10000f0 0x36 0xa5 0xd3 0x10000e5 0x80 0x10000e5 0x01 0x10000b3 0x00 0x10000e5 0x00 0x10000f0 0x36 0xa5 0x53 0x10000e0 0x00 0x35 0x33 0x00 0x00 0x00 0x00 0x35 0x33 0x00 0x00 0x00 0x100003a 0x55 0x1000011 0x2000001 0x1000029>;
+				phandle = <0x04>;
+			};
+
+			mksts35v2_ts@1 {
+				compatible = "ti,ads7846";
+				reg = <0x01>;
+				status = "disabled";
+				spi-max-frequency = <0x1e8480>;
+				interrupts = <0x05 0x02>;
+				interrupt-parent = <&gpio>;
+				pendown-gpio = <&gpio 0x05 0x00>;
+				ti,x-plate-ohms = [00 64];
+				ti,pressure-max = [00 ff];
+				phandle = <0x05>;
+			};
+		};
+	};
+
+	__overrides__ {
+		speed = <0x04 0x7370692d 0x6d61782d 0x66726571 0x75656e63 0x793a3000>;
+		rotate = [00 00 00 04 72 6f 74 61 74 65 3a 30 00];
+		fps = [00 00 00 04 66 70 73 3a 30 00];
+		debug = <0x04 0x64656275 0x673a3000>;
+		touch = [00 00 00 05 73 74 61 74 75 73 00];
+		touchgpio = <0x02 0x6272636d 0x2c70696e 0x733a3000 0x05 0x696e7465 0x72727570 0x74733a30 0x00 0x570656e 0x646f776e 0x2d677069 0x6f3a3400>;
+		xohms = [00 00 00 05 74 69 2c 78 2d 70 6c 61 74 65 2d 6f 68 6d 73 3b 30 00];
+	};
+
+	__symbols__ {
+		mksts35v2_pins = "/fragment@3/__overlay__/mksts35v2_pins";
+		mksts35v2_ts_pins = "/fragment@3/__overlay__/mksts35v2_ts_pins";
+		mksts35v2 = "/fragment@4/__overlay__/mksts35v2@0";
+		mksts35v2_ts = "/fragment@4/__overlay__/mksts35v2_ts@1";
+	};
+
+	__local_fixups__ {
+
+		fragment@4 {
+
+			__overlay__ {
+
+				mksts35v2@0 {
+					pinctrl-0 = <0x00 0x04>;
+				};
+			};
+		};
+
+		__overrides__ {
+			speed = <0x00>;
+			rotate = <0x00>;
+			fps = <0x00>;
+			debug = <0x00>;
+			touch = <0x00>;
+			touchgpio = <0x00 0x10 0x21>;
+			xohms = <0x00>;
+		};
+	};
+};
